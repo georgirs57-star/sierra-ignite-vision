@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Send, Sparkles, Plus } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import emblem from "@/assets/sierra-emblem.jpg";
+import { SierraSphere, useIsDay } from "@/components/SierraSphere";
 
 export const Route = createFileRoute("/chat")({
   head: () => ({ meta: [{ title: "Assistant SIERRA — Chat" }] }),
