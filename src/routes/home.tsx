@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Bell, ArrowRight, Flame, BookMarked, Bot, Play } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import emblem from "@/assets/sierra-emblem.jpg";
+import { SierraSphere, useIsDay } from "@/components/SierraSphere";
 import trendLightning from "@/assets/trend-lightning.jpg";
 import trendAfrica from "@/assets/trend-africa.jpg";
 import trendAI from "@/assets/trend-ai.jpg";
@@ -19,6 +19,7 @@ const trends = [
 ];
 
 function HomePage() {
+  const isDay = useIsDay();
   return (
     <AppShell>
       <div className="px-5 pt-6">
@@ -55,7 +56,7 @@ function HomePage() {
                 Explorer maintenant <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
-            <img src={emblem} alt="" className="h-28 w-28 rounded-full object-cover mix-blend-screen" width={200} height={200} loading="lazy" />
+            <SierraSphere size={112} />
           </div>
         </div>
 
@@ -116,14 +117,11 @@ function HomePage() {
           </h3>
           <div className="card-surface relative overflow-hidden rounded-3xl p-5">
             <div className="flex items-center gap-4">
-              <div className="relative shrink-0">
-                <div className="absolute inset-0 animate-pulse-glow rounded-full bg-gold/30 blur-2xl" />
-                <img src={emblem} alt="" className="relative h-20 w-20 rounded-full object-cover mix-blend-screen" width={200} height={200} loading="lazy" />
-              </div>
+              <SierraSphere size={80} />
               <p className="flex-1 text-sm leading-relaxed">
-                Pose-moi n'importe quelle question.
+                {isDay ? "Mode Jour — énergie solaire ☀" : "Mode Nuit — énergie lunaire ☾"}
                 <br />
-                Je suis là pour t'aider.
+                Pose-moi n'importe quelle question.
               </p>
             </div>
             <Link

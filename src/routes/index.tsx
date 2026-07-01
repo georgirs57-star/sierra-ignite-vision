@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import splashBg from "@/assets/splash-bg.jpg";
-import emblem from "@/assets/sierra-emblem.jpg";
+import splash from "@/assets/splash-sierra.png";
 
 export const Route = createFileRoute("/")({
   component: SplashScreen,
@@ -12,69 +11,65 @@ function SplashScreen() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const t = setInterval(() => {
-      setProgress((p) => Math.min(100, p + 2));
-    }, 60);
+    const t = setInterval(() => setProgress((p) => Math.min(100, p + 2)), 55);
     return () => clearInterval(t);
   }, []);
 
   useEffect(() => {
     if (progress >= 100) {
-      const to = setTimeout(() => navigate({ to: "/login" }), 400);
+      const to = setTimeout(() => navigate({ to: "/login" }), 500);
       return () => clearTimeout(to);
     }
   }, [progress, navigate]);
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-black">
+      {/* Full-bleed hero artwork */}
       <img
-        src={splashBg}
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover opacity-90"
+        src={splash}
+        alt="SIERRA"
+        className="absolute inset-0 h-full w-full object-cover animate-drift-in"
         width={1024}
-        height={1536}
+        height={1900}
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/40 to-background/95" />
+      {/* Vignette + bottom fade so the progress reads over the art */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70" />
+      <div className="pointer-events-none absolute inset-0 [background:radial-gradient(120%_60%_at_50%_100%,rgba(0,0,0,0.65),transparent_60%)]" />
 
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-between px-6 py-16">
-        <div className="flex flex-1 flex-col items-center justify-center text-center">
-          <div className="relative mb-8 animate-float-up">
-            <div className="absolute inset-0 animate-pulse-glow rounded-full bg-gold/30 blur-3xl" />
-            <img
-              src={emblem}
-              alt="SIERRA"
-              className="relative h-44 w-44 rounded-full object-cover mix-blend-screen"
-              width={200}
-              height={200}
-            />
-          </div>
-          <h1 className="animate-float-up text-5xl font-extrabold tracking-[0.2em] text-gold drop-shadow-[0_2px_20px_rgba(244,197,66,0.5)]">
-            SIERRA
-          </h1>
-          <div className="mt-2 h-px w-16 bg-gold/60" />
-          <div className="mt-8 space-y-1 text-sm font-semibold uppercase tracking-[0.25em] text-foreground/90">
-            <p className="animate-float-up" style={{ animationDelay: "0.1s" }}>Apprendre.</p>
-            <p className="animate-float-up" style={{ animationDelay: "0.25s" }}>Comprendre.</p>
-            <p className="animate-float-up text-gold" style={{ animationDelay: "0.4s" }}>
-              Construire l'Afrique de demain.
-            </p>
-          </div>
-        </div>
+      {/* Twinkling stars overlay */}
+      <div className="pointer-events-none absolute inset-0">
+        {Array.from({ length: 24 }).map((_, i) => (
+          <span
+            key={i}
+            className="absolute h-[3px] w-[3px] rounded-full bg-white animate-twinkle"
+            style={{
+              top: `${(i * 37) % 100}%`,
+              left: `${(i * 53) % 100}%`,
+              animationDelay: `${(i % 6) * 0.4}s`,
+              opacity: 0.6,
+            }}
+          />
+        ))}
+      </div>
 
-        <div className="w-full max-w-xs space-y-3">
-          <p className="text-center text-xs tracking-wide text-foreground/80">
-            Chargement de l'Académie...
-          </p>
+      {/* Bottom progress block */}
+      <div className="absolute inset-x-0 bottom-0 z-10 px-8 pb-10">
+        <div className="mx-auto w-full max-w-xs space-y-3 text-center">
+          <p className="text-sm tracking-wide text-white/85">Chargement de l'Académie...</p>
           <div className="flex items-center gap-3">
-            <div className="relative h-2 flex-1 overflow-hidden rounded-full border border-gold/40 bg-background/40">
+            <div className="relative h-2.5 flex-1 overflow-hidden rounded-full border border-gold/50 bg-black/50">
               <div
-                className="h-full bg-gradient-to-r from-electric to-gold transition-all duration-100"
+                className="h-full rounded-full bg-gradient-to-r from-electric via-cyan-400 to-gold transition-all duration-100"
                 style={{ width: `${progress}%` }}
               />
+              <div
+                className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/50 to-transparent"
+                style={{ transform: `translateX(${progress * 3}%)` }}
+              />
             </div>
-            <span className="text-xs font-semibold text-gold">{progress}%</span>
+            <span className="text-xs font-bold text-gold">{progress}%</span>
           </div>
-          <p className="pt-2 text-center text-xs text-gold/80">
+          <p className="pt-1 text-xs text-gold/90">
             ✦ Ton voyage de savoir commence ici.
           </p>
         </div>

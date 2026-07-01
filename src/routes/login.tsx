@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Globe, BookOpen, Sparkles, BarChart3, ShieldCheck } from "lucide-react";
-import loginArt from "@/assets/login-art.jpg";
+import loginArt from "@/assets/login-sierra.png";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Connexion — SIERRA" }] }),
