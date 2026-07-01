@@ -65,13 +65,12 @@ function ChatPage() {
       <div className="flex h-[calc(100vh-7rem)] flex-col px-5 pt-6">
         {/* Header */}
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="absolute inset-0 animate-pulse-glow rounded-full bg-gold/30 blur-xl" />
-            <img src={emblem} alt="" className="relative h-12 w-12 rounded-full object-cover mix-blend-screen" width={100} height={100} />
-          </div>
+          <SierraSphere size={52} />
           <div className="flex-1">
             <h1 className="text-xl font-bold">Assistant SIERRA</h1>
-            <p className="text-xs text-emerald-400">● En ligne</p>
+            <p className="text-xs text-emerald-400">
+              ● En ligne — {isDay ? "Mode Jour ☀" : "Mode Nuit ☾"}
+            </p>
           </div>
           <button className="grid h-10 w-10 place-items-center rounded-full border border-border bg-surface/60">
             <Plus className="h-5 w-5" />
@@ -92,7 +91,7 @@ function ChatPage() {
           {msgs.map((m) => (
             <div key={m.id} className={`flex ${m.from === "me" ? "justify-end" : "justify-start"}`}>
               {m.from === "sierra" && (
-                <img src={emblem} alt="" className="mr-2 h-8 w-8 shrink-0 rounded-full object-cover mix-blend-screen" />
+                <div className="mr-2 shrink-0"><SierraSphere size={32} /></div>
               )}
               <div
                 className={`max-w-[78%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed animate-float-up ${
@@ -107,7 +106,7 @@ function ChatPage() {
           ))}
           {typing && (
             <div className="flex items-center gap-2">
-              <img src={emblem} alt="" className="h-8 w-8 rounded-full object-cover mix-blend-screen" />
+              <SierraSphere size={32} />
               <div className="card-surface flex gap-1 rounded-2xl rounded-bl-md px-4 py-3">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-gold" />
                 <span className="h-2 w-2 animate-pulse rounded-full bg-gold [animation-delay:150ms]" />
