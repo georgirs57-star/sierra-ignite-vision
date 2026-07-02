@@ -72,8 +72,16 @@ function StemPage() {
   return (
     <AppShell>
       <div className="px-5 pt-6">
-        <h1 className="text-3xl font-extrabold">STEM</h1>
+        <h1 className="flex items-center gap-2 text-3xl font-extrabold">
+          STEM
+          {loading && <Loader2 className="h-5 w-5 animate-spin text-gold" />}
+        </h1>
         <p className="text-sm text-muted-foreground">Science, Technologie, Ingénierie, Maths.</p>
+        {error && (
+          <p className="mt-2 flex items-center gap-1.5 text-xs text-amber-400/90">
+            <AlertCircle className="h-3.5 w-3.5" /> Flux hors-ligne — affichage du cache local. ({error})
+          </p>
+        )}
 
         {/* Subject tabs */}
         <div className="-mx-5 mt-5 flex gap-2 overflow-x-auto px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
