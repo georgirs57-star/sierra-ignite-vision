@@ -25,7 +25,8 @@ function SplashScreen() {
   const skip = () => navigate({ to: "/login", replace: true });
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-black">
+    <div onClick={skip} className="relative min-h-screen overflow-hidden bg-black cursor-pointer">
+
       {/* Full-bleed hero artwork */}
       <img
         src={splash}
