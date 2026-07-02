@@ -100,7 +100,7 @@ function LoginPage() {
 
             <button
               type="button"
-              onClick={() => navigate({ to: "/home" })}
+              onClick={() => navigate({ to: "/home", replace: true })}
               className="flex w-full items-center justify-center gap-3 rounded-full border border-gold/50 bg-surface/40 py-4 text-sm font-semibold backdrop-blur"
             >
               <GoogleIcon /> Continuer avec Google
