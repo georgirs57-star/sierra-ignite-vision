@@ -53,7 +53,7 @@ function ProfilePage() {
         </div>
 
         <button
-          onClick={() => navigate({ to: "/login" })}
+          onClick={() => navigate({ to: "/login", replace: true })}
           className="mt-6 flex w-full items-center justify-center gap-2 rounded-full border border-destructive/40 py-3.5 text-sm font-semibold text-destructive"
         >
           <LogOut className="h-4 w-4" /> Se déconnecter

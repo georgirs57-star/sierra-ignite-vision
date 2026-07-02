@@ -17,13 +17,16 @@ function SplashScreen() {
 
   useEffect(() => {
     if (progress >= 100) {
-      const to = setTimeout(() => navigate({ to: "/login" }), 500);
+      const to = setTimeout(() => navigate({ to: "/login", replace: true }), 500);
       return () => clearTimeout(to);
     }
   }, [progress, navigate]);
 
+  const skip = () => navigate({ to: "/login", replace: true });
+
   return (
-    <div className="relative min-h-screen overflow-hidden bg-black">
+    <div onClick={skip} className="relative min-h-screen overflow-hidden bg-black cursor-pointer">
+
       {/* Full-bleed hero artwork */}
       <img
         src={splash}
