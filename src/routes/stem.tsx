@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Play, Clock, Zap, Film } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Play, Clock, Zap, Film, Loader2, AlertCircle } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
+import { invokeEdgeFunction } from "@/lib/supabase";
 
 export const Route = createFileRoute("/stem")({
   head: () => ({ meta: [{ title: "STEM — SIERRA" }] }),
@@ -10,7 +11,14 @@ export const Route = createFileRoute("/stem")({
 
 const subjects = ["Tout", "Maths", "Physique-Chimie", "SVT", "Histoire-Géo", "Français", "Anglais", "Technologie"];
 
-const shorts = [
+type StemItem = {
+  title: string;
+  subject: string;
+  duration: string;
+  tone: string;
+};
+
+const fallbackShorts: StemItem[] = [
   { title: "Pythagore en 60 sec", subject: "Maths", duration: "0:58", tone: "from-amber-500 to-orange-600" },
   { title: "L'ADN décodé", subject: "SVT", duration: "0:45", tone: "from-emerald-500 to-teal-600" },
   { title: "Loi d'Ohm", subject: "Physique-Chimie", duration: "1:02", tone: "from-sky-500 to-indigo-600" },
@@ -18,15 +26,46 @@ const shorts = [
   { title: "Réactions chimiques", subject: "Physique-Chimie", duration: "0:48", tone: "from-purple-500 to-violet-600" },
 ];
 
-const longs = [
+const fallbackLongs: StemItem[] = [
   { title: "Cours complet — Fonctions du second degré", subject: "Maths", duration: "32:14", tone: "from-amber-500/40 to-orange-500/20" },
   { title: "L'évolution des espèces — Darwin et après", subject: "SVT", duration: "47:02", tone: "from-emerald-500/40 to-teal-500/20" },
   { title: "Mécanique quantique — Introduction", subject: "Physique-Chimie", duration: "55:48", tone: "from-sky-500/40 to-indigo-500/20" },
   { title: "L'histoire de l'informatique", subject: "Technologie", duration: "41:22", tone: "from-violet-500/40 to-fuchsia-500/20" },
 ];
 
+type StemFeedResponse = {
+  shorts?: StemItem[];
+  longs?: StemItem[];
+};
+
 function StemPage() {
   const [active, setActive] = useState("Tout");
+  const [shorts, setShorts] = useState<StemItem[]>(fallbackShorts);
+  const [longs, setLongs] = useState<StemItem[]>(fallbackLongs);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      try {
+        const data = await invokeEdgeFunction<StemFeedResponse>("stem-feed", { subject: active });
+        if (cancelled) return;
+        if (data?.shorts?.length) setShorts(data.shorts);
+        if (data?.longs?.length) setLongs(data.longs);
+        setError(null);
+      } catch (e) {
+        if (!cancelled) setError(e instanceof Error ? e.message : "Erreur d'alimentation");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [active]);
+
   const fs = active === "Tout" ? shorts : shorts.filter((s) => s.subject === active);
   const fl = active === "Tout" ? longs : longs.filter((s) => s.subject === active);
 
