@@ -15,7 +15,7 @@ function LoginPage() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate({ to: "/home" });
+    navigate({ to: "/home", replace: true });
   };
 
   return (
