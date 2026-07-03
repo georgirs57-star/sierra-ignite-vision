@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Award, BookOpen, Flame, LogOut, Settings, ChevronRight } from "lucide-react";
+import { Award, BookOpen, Flame, LogOut, Settings, ChevronRight, Loader2 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
+import { useAuth, signOut } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({ meta: [{ title: "Profil — SIERRA" }] }),
@@ -9,6 +10,13 @@ export const Route = createFileRoute("/profile")({
 
 function ProfilePage() {
   const navigate = useNavigate();
+  const { user, profile, loading } = useAuth();
+
+  const initial = (profile?.name ?? user?.email ?? "?").trim().charAt(0).toUpperCase();
+  const displayName = profile?.name ?? user?.email ?? "Invité";
+  const level = profile?.level ?? "Non défini";
+  const xp = profile?.xp ?? 0;
+
   return (
     <AppShell>
       <div className="px-5 pt-6">
@@ -16,19 +24,19 @@ function ProfilePage() {
 
         <div className="card-surface mt-5 flex items-center gap-4 rounded-3xl p-5">
           <div className="grid h-16 w-16 place-items-center rounded-full bg-gold-gradient text-2xl font-extrabold text-primary-foreground shadow-gold">
-            A
+            {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : initial}
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-bold">Aminata Diallo</h2>
-            <p className="text-sm text-muted-foreground">Terminale S · Dakar</p>
+            <h2 className="text-lg font-bold">{displayName}</h2>
+            <p className="text-sm text-muted-foreground">{level} · SIERRA</p>
           </div>
         </div>
 
         <div className="mt-4 grid grid-cols-3 gap-3">
           {[
-            { icon: Flame, label: "Série", value: "12j" },
-            { icon: BookOpen, label: "Leçons", value: "48" },
-            { icon: Award, label: "Badges", value: "7" },
+            { icon: Flame, label: "XP", value: String(xp) },
+            { icon: BookOpen, label: "Leçons", value: "—" },
+            { icon: Award, label: "Badges", value: "—" },
           ].map((s) => (
             <div key={s.label} className="card-surface rounded-2xl p-4 text-center">
               <s.icon className="mx-auto h-5 w-5 text-gold" />
@@ -42,7 +50,7 @@ function ProfilePage() {
           {[
             { icon: Settings, label: "Paramètres" },
             { icon: Award, label: "Mes accomplissements" },
-            { icon: BookOpen, label: "Mes cours sauvegardés" },
+            { icon: BookOpen, label: "Mes favoris" },
           ].map((row) => (
             <button key={row.label} className="flex w-full items-center gap-3 px-4 py-4 text-left">
               <row.icon className="h-5 w-5 text-gold" />
@@ -53,7 +61,7 @@ function ProfilePage() {
         </div>
 
         <button
-          onClick={() => navigate({ to: "/login", replace: true })}
+          onClick={async () => { await signOut(); navigate({ to: "/login", replace: true }); }}
           className="mt-6 flex w-full items-center justify-center gap-2 rounded-full border border-destructive/40 py-3.5 text-sm font-semibold text-destructive"
         >
           <LogOut className="h-4 w-4" /> Se déconnecter
