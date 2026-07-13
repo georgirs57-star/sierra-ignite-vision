@@ -1,10 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Send, Sparkles, Plus, Loader2 } from "lucide-react";
+import { Send, Sparkles, Plus } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { SierraSphere, useIsDay } from "@/components/SierraSphere";
-import { supabase, invokeEdgeFunction } from "@/lib/supabase";
-import { useAuth, logXp } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/chat")({
   head: () => ({ meta: [{ title: "Assistant SIERRA — Chat" }] }),
@@ -20,66 +18,27 @@ const suggestions = [
 ];
 
 function ChatPage() {
-  const { user, profile } = useAuth();
   const isDay = useIsDay();
   const [msgs, setMsgs] = useState<Msg[]>([
-    { id: "welcome", from: "sierra", text: "Salut ! 👋 Je suis SIERRA, ton assistant d'apprentissage. Pose-moi une question sur n'importe quel sujet." },
+    { id: "welcome", from: "sierra", text: "Salut ! 👋 Je suis SIERRA. Le backend n'est pas branché — connecte-le pour que je puisse te répondre." },
   ]);
   const [input, setInput] = useState("");
-  const [typing, setTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!user) return;
-    supabase.from("chat_history")
-      .select("id,message,response,created_at")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: true })
-      .limit(20)
-      .then(({ data }) => {
-        if (!data?.length) return;
-        const list: Msg[] = [];
-        for (const r of data as any[]) {
-          list.push({ id: `u-${r.id}`, from: "me", text: r.message });
-          if (r.response) list.push({ id: `a-${r.id}`, from: "sierra", text: r.response });
-        }
-        setMsgs((prev) => [prev[0], ...list]);
-      });
-  }, [user?.id]);
-
-  useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [msgs, typing]);
+  }, [msgs]);
 
-  const send = async (text?: string) => {
+  const send = (text?: string) => {
     const content = (text ?? input).trim();
     if (!content) return;
     const id = String(Date.now());
-    setMsgs((m) => [...m, { id, from: "me", text: content }]);
+    setMsgs((m) => [
+      ...m,
+      { id, from: "me", text: content },
+      { id: id + "-a", from: "sierra", text: "Le backend n'est pas connecté. Ajoute une intégration IA pour activer les réponses." },
+    ]);
     setInput("");
-    setTyping(true);
-
-    try {
-      const history = msgs.slice(-8).map((m) => ({
-        role: m.from === "me" ? "user" as const : "model" as const,
-        text: m.text,
-      }));
-      const res = await invokeEdgeFunction<{ answer: string }>("chat-ai", {
-        message: content,
-        level: profile?.level ?? "Seconde C",
-        history,
-      });
-      const answer = res.answer || "…";
-      setMsgs((m) => [...m, { id: id + "-a", from: "sierra", text: answer }]);
-      if (user) {
-        void supabase.from("chat_history").insert({ user_id: user.id, message: content, response: answer });
-        void logXp(user.id, "chat_question", 3);
-      }
-    } catch (e) {
-      setMsgs((m) => [...m, { id: id + "-a", from: "sierra", text: `Désolé, une erreur est survenue : ${e instanceof Error ? e.message : "inconnue"}` }]);
-    } finally {
-      setTyping(false);
-    }
   };
 
   return (
@@ -113,17 +72,9 @@ function ChatPage() {
               </div>
             </div>
           ))}
-          {typing && (
-            <div className="flex items-center gap-2">
-              <SierraSphere size={32} />
-              <div className="card-surface flex items-center gap-2 rounded-2xl rounded-bl-md px-4 py-3 text-xs text-muted-foreground">
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-gold" /> SIERRA réfléchit…
-              </div>
-            </div>
-          )}
         </div>
 
-        {msgs.length <= 2 && (
+        {msgs.length <= 1 && (
           <div className="mb-3 space-y-2">
             <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-gold" /> Suggestions
@@ -137,7 +88,7 @@ function ChatPage() {
         )}
 
         <form
-          onSubmit={(e) => { e.preventDefault(); void send(); }}
+          onSubmit={(e) => { e.preventDefault(); send(); }}
           className="flex items-center gap-2 rounded-full border border-border bg-surface/80 p-1.5 backdrop-blur focus-within:border-gold/70"
         >
           <input
@@ -148,7 +99,7 @@ function ChatPage() {
           />
           <button
             type="submit"
-            disabled={!input.trim() || typing}
+            disabled={!input.trim()}
             className="grid h-10 w-10 place-items-center rounded-full bg-gold-gradient text-primary-foreground shadow-gold disabled:opacity-40"
           >
             <Send className="h-4 w-4" />

@@ -1,8 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Globe, BookOpen, Sparkles, BarChart3, ShieldCheck, Loader2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Globe, BookOpen, Sparkles, BarChart3, ShieldCheck } from "lucide-react";
 import loginArt from "@/assets/login-sierra.png";
-import { signInWithGoogle, signInWithEmail, signUpWithEmail } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Connexion — SIERRA" }] }),
@@ -15,30 +14,11 @@ function LoginPage() {
   const [lang, setLang] = useState("Français");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
   const [mode, setMode] = useState<"signin" | "signup">("signin");
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    setErr(null); setLoading(true);
-    try {
-      const { error } = mode === "signin"
-        ? await signInWithEmail(email, password)
-        : await signUpWithEmail(email, password);
-      if (error) throw error;
-      navigate({ to: "/home", replace: true });
-    } catch (e: any) {
-      setErr(e?.message ?? "Erreur d'authentification");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const google = async () => {
-    setErr(null);
-    const { error } = await signInWithGoogle();
-    if (error) setErr(error.message);
+    navigate({ to: "/home", replace: true });
   };
 
   return (
@@ -89,23 +69,10 @@ function LoginPage() {
               </button>
             </Field>
 
-            {err && <p className="text-sm text-destructive">{err}</p>}
-
-            <button type="submit" disabled={loading}
-              className="group flex w-full items-center justify-center gap-3 rounded-full bg-gold-gradient py-4 text-base font-bold text-primary-foreground shadow-gold transition active:scale-[0.98] disabled:opacity-60">
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (mode === "signin" ? "Se connecter" : "Créer mon compte")}
-              {!loading && <ArrowRight className="h-4 w-4" />}
-            </button>
-
-            <div className="flex items-center gap-3 py-2">
-              <div className="h-px flex-1 bg-border" />
-              <span className="text-xs text-muted-foreground">OU</span>
-              <div className="h-px flex-1 bg-border" />
-            </div>
-
-            <button type="button" onClick={google}
-              className="flex w-full items-center justify-center gap-3 rounded-full border border-gold/50 bg-surface/40 py-4 text-sm font-semibold backdrop-blur">
-              <GoogleIcon /> Continuer avec Google
+            <button type="submit"
+              className="group flex w-full items-center justify-center gap-3 rounded-full bg-gold-gradient py-4 text-base font-bold text-primary-foreground shadow-gold transition active:scale-[0.98]">
+              {mode === "signin" ? "Se connecter" : "Créer mon compte"}
+              <ArrowRight className="h-4 w-4" />
             </button>
 
             <div className="pt-2">
@@ -158,13 +125,5 @@ function Feature({ icon, label }: { icon: React.ReactNode; label: string }) {
       <div className="grid h-9 w-9 place-items-center rounded-full bg-surface/60 text-gold">{icon}</div>
       <p>{label}</p>
     </div>
-  );
-}
-
-function GoogleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5">
-      <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.4-1.7 4-5.5 4-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.7 3.6 14.6 2.7 12 2.7 6.9 2.7 2.7 6.9 2.7 12s4.2 9.3 9.3 9.3c5.4 0 8.9-3.8 8.9-9.1 0-.6-.1-1.1-.2-1.6H12z" />
-    </svg>
   );
 }
