@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Award, BookOpen, Flame, LogOut, Settings, ChevronRight, Loader2 } from "lucide-react";
+import { Award, BookOpen, Flame, LogOut, Settings, ChevronRight } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { useAuth, signOut } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({ meta: [{ title: "Profil — SIERRA" }] }),
@@ -10,12 +9,6 @@ export const Route = createFileRoute("/profile")({
 
 function ProfilePage() {
   const navigate = useNavigate();
-  const { user, profile, loading } = useAuth();
-
-  const initial = (profile?.name ?? user?.email ?? "?").trim().charAt(0).toUpperCase();
-  const displayName = profile?.name ?? user?.email ?? "Invité";
-  const level = profile?.level ?? "Non défini";
-  const xp = profile?.xp ?? 0;
 
   return (
     <AppShell>
@@ -24,17 +17,17 @@ function ProfilePage() {
 
         <div className="card-surface mt-5 flex items-center gap-4 rounded-3xl p-5">
           <div className="grid h-16 w-16 place-items-center rounded-full bg-gold-gradient text-2xl font-extrabold text-primary-foreground shadow-gold">
-            {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : initial}
+            S
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-bold">{displayName}</h2>
-            <p className="text-sm text-muted-foreground">{level} · SIERRA</p>
+            <h2 className="text-lg font-bold">Invité</h2>
+            <p className="text-sm text-muted-foreground">Seconde · SIERRA</p>
           </div>
         </div>
 
         <div className="mt-4 grid grid-cols-3 gap-3">
           {[
-            { icon: Flame, label: "XP", value: String(xp) },
+            { icon: Flame, label: "XP", value: "0" },
             { icon: BookOpen, label: "Leçons", value: "—" },
             { icon: Award, label: "Badges", value: "—" },
           ].map((s) => (
@@ -61,7 +54,7 @@ function ProfilePage() {
         </div>
 
         <button
-          onClick={async () => { await signOut(); navigate({ to: "/login", replace: true }); }}
+          onClick={() => navigate({ to: "/login", replace: true })}
           className="mt-6 flex w-full items-center justify-center gap-2 rounded-full border border-destructive/40 py-3.5 text-sm font-semibold text-destructive"
         >
           <LogOut className="h-4 w-4" /> Se déconnecter
